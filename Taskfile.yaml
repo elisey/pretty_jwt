@@ -1,0 +1,90 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  PACKAGE: "{{.PWD}}/pretty_jwt/"
+
+tasks:
+  install-deps:
+    sources:
+      - pyproject.toml
+      - poetry.lock
+    cmds:
+      - poetry install
+
+  pytest:
+    deps:
+      - install-deps
+    cmds:
+      - poetry run pytest {{.CLI_ARGS}}
+
+  flake8:
+    deps:
+      - install-deps
+    cmds:
+      - poetry run flake8 {{.CLI_ARGS}}
+
+  mypy:
+    deps:
+      - install-deps
+    cmds:
+      - poetry run mypy {{.CLI_ARGS}} {{.PACKAGE}}
+
+  bandit:
+    deps:
+      - install-deps
+    cmds:
+      - poetry run bandit -r --ini .bandit {{.CLI_ARGS}} {{.PACKAGE}}
+
+  black:
+    deps:
+      - install-deps
+    cmds:
+      - poetry run black {{.CLI_ARGS}} {{.PACKAGE}}
+
+  black-check:
+    deps:
+      - install-deps
+    cmds:
+      - poetry run black --check {{.CLI_ARGS}} {{.PACKAGE}}
+
+  isort:
+    deps:
+      - install-deps
+    cmds:
+      - poetry run isort {{.CLI_ARGS}} {{.PACKAGE}}
+
+  isort-check:
+    deps:
+      - install-deps
+    cmds:
+      - poetry run isort --check-only {{.CLI_ARGS}} {{.PACKAGE}}
+
+  format:
+    desc: run all code formatters
+    cmds:
+      - task: black
+      - task: isort
+
+  lint:
+    desc: run all linters
+    cmds:
+      - task: flake8
+      - task: bandit
+      - task: isort-check
+      - task: black-check
+      - task: mypy
+
+  test:
+    desc: run all tests
+    cmds:
+      - task: pytest
+
+  all:
+    desc: run all code formatters, linters, and tests
+    cmds:
+      - task: format
+      - task: lint
+      - task: test
+
