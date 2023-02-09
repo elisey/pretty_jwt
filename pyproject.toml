@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pretty_jwt"
-version = "0.1.0"
+version = "0.2.0"
 description = "Simple utility for viewing JWT tokens in console"
 authors = ["Elisei <elisey.rav@gmail.comp>"]
 license = "MIT"
